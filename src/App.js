@@ -1,28 +1,30 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import Toolbar from "./containers/Toolbar";
+import CSVTable from "./containers/CSVTable";
+import Header from "./components/Header";
+
+import { withStyles } from "@material-ui/core/styles";
+
+const styles = theme => ({
+  root: {
+    width: 1280,
+    margin: "0px auto"
+  }
+});
 
 class App extends Component {
   render() {
+    const { classes } = this.props;
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <>
+        <Header />
+        <div className={classes.root}>
+          <Toolbar />
+          <CSVTable />
+        </div>
+      </>
     );
   }
 }
 
-export default App;
+export default withStyles(styles)(App);
