@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-// import TablePagination from '../components/TablePagination';
+import Pagination from "../components/Pagination";
 import { connect } from "react-redux";
 import {
   Paper,
@@ -8,7 +8,7 @@ import {
   TableCell,
   TableRow,
   TableFooter,
-  TablePagination,
+  // TablePagination,
   TableHead,
   Typography
 } from "@material-ui/core";
@@ -19,10 +19,12 @@ import * as actionTypes from "../actions/actionTypes";
 
 const styles = theme => ({
   root: {
-    overflowX: "hidden"
+    // overflowX: "hidden"
   },
   tableWrapper: {
-    overflowX: "auto"
+    overflowX: "auto",
+    width: "100%"
+    // display: "table"
   }
 });
 
@@ -34,9 +36,6 @@ class CSVTable extends Component {
     });
   };
   handleInputBlur = (index, editable, event) => {
-    console.log(index);
-    console.log(event.target.value);
-    console.log("blur");
     this.props.updateColumn({
       editable,
       index,
@@ -44,30 +43,67 @@ class CSVTable extends Component {
     });
   };
 
-  render() {
-    const { classes, columns, rows } = this.props;
+  startEditRowHandler = (rowIndex, colIndex, event) => {
+    this.props.updateRow({
+      editable: true,
+      coordinates: [rowIndex, colIndex]
+    });
+  };
+  handleInputRowBlur = (rowIndex, colIndex, editable, event) => {
+    this.props.updateRow({
+      editable,
+      coordinates: [rowIndex, colIndex],
+      value: event.target.value
+    });
+  };
+  componentDidMount() {}
 
+  handleColumnDeletion = (index, event) => {
+    this.props.deleteColumn({
+      index
+    })
+  };
+  handleRowDeletion = (rowInd, colInd, event) => {
+    this.props.deleteColumn({
+      coordinates: [rowInd, colInd]
+    })
+    // console.log(rowInd, colInd);
+  };
+  render() {
+    const {
+      classes,
+      columns,
+      rows,
+      visibleRows,
+      rowsPerPage,
+      page
+    } = this.props;
     return (
       <Paper className={classes.root}>
-        <Table>
-          <div classes={classes.tableWrapper}>
+        <div className={classes.tableWrapper}>
+          <Table>
             <CSVHeader
               columns={columns}
               startEditHandler={this.startEditHandler}
               handleInputBlur={this.handleInputBlur}
+              onDelete={this.handleColumnDeletion}
             />
             <CSVBody
-              rows={rows}
+              rows={visibleRows}
               startEditHandler={this.startEditRowHandler}
               handleInputBlur={this.handleInputRowBlur}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onDelete={this.handleRowDeletion}
             />
-          </div>
-          <TableFooter>
-            <TableRow>
-              <TablePagination />
-            </TableRow>
-          </TableFooter>
-        </Table>
+          </Table>
+        </div>
+        <Pagination
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onParamsUpdate={this.props.updateTableParams}
+        />
       </Paper>
     );
   }
@@ -75,12 +111,21 @@ class CSVTable extends Component {
 
 const mapStateToProps = state => ({
   columns: state.table.columns,
-  rows: state.table.rows
+  rows: state.table.rows,
+  visibleRows: state.table.visibleRows,
+  rowsPerPage: state.table.rowsPerPage,
+  page: state.table.page
 });
 
 const mapDispatchToProps = dispatch => ({
   updateColumn: payload =>
-    dispatch({ type: actionTypes.UPDATE_COLUMN, payload })
+    dispatch({ type: actionTypes.UPDATE_COLUMN, payload }),
+  updateRow: payload => dispatch({ type: actionTypes.UPDATE_ROW, payload }),
+  updateTableParams: payload =>
+    dispatch({ type: actionTypes.UPDATE_TABLE_PARAMS, payload }),
+  deleteColumn: payload =>
+    dispatch({ type: actionTypes.DELETE_COLUMN, payload }),
+  deleteRow: payload => dispatch({ type: actionTypes.DELETE_ROW, payload })
 });
 
 export default connect(
