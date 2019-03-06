@@ -1,63 +1,71 @@
 import React, { Component } from "react";
-import Pagination from "../components/Pagination";
 import { connect } from "react-redux";
-import {
-  Paper,
-  Table,
-} from "@material-ui/core";
+import { Paper, Table } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import Pagination from "../components/Pagination";
 import Header from "../components/Table/Header";
 import Body from "../components/Table/Body";
 import * as actionTypes from "../actions/actionTypes";
 
-const styles = theme => ({
+const styles = () => ({
   root: {},
   tableWrapper: {
     overflowX: "auto",
-    width: "100%"
-  }
+    width: "100%",
+  },
 });
 
 class CSVTable extends Component {
-  onHeaderFocusHandler = (index, refElem, event) => {
-    this.props.updateColumn({
+  onHeaderFocusHandler = (index) => {
+    const { updateColumn } = this.props;
+    updateColumn({
       editable: true,
-      index
-    });
-  };
-  onHeaderChangeHandler = (index, editable, event) => {
-    this.props.updateColumn({
-      editable,
       index,
-      value: event.target.value
     });
   };
 
-  onRowFocusHandler = (rowIndex, colIndex, event) => {
-    this.props.updateRow({
-      editable: true,
-      coordinates: [rowIndex, colIndex]
+  onHeaderChangeHandler = (index, editable, event) => {
+    const { updateColumn } = this.props;
+    updateColumn({
+      editable,
+      index,
+      value: event.target.value,
     });
   };
+
+  onRowFocusHandler = (rowIndex, colIndex) => {
+    const { updateRow } = this.props;
+    updateRow({
+      editable: true,
+      coordinates: [rowIndex, colIndex],
+    });
+  };
+
   onRowChangeHandler = (rowIndex, colIndex, editable, event) => {
-    this.props.updateRow({
+    const { updateRow } = this.props;
+    updateRow({
       editable,
       coordinates: [rowIndex, colIndex],
-      value: event.target.value
+      value: event.target.value,
     });
   };
+
   handleColumnDeletion = (index, event) => {
-    this.props.deleteColumn({
-      index
+    const { deleteColumn } = this.props;
+    deleteColumn({
+      index,
     });
     event.stopPropagation();
   };
+
   handleRowDeletion = (index, event) => {
-    this.props.deleteRow({
-      index
+    const { deleteRow } = this.props;
+    deleteRow({
+      index,
     });
     event.stopPropagation();
   };
+
   render() {
     const {
       classes,
@@ -66,7 +74,7 @@ class CSVTable extends Component {
       visibleRows,
       rowsPerPage,
       page,
-      updateTableParams
+      updateTableParams,
     } = this.props;
     return (
       <>
@@ -108,21 +116,18 @@ const mapStateToProps = state => ({
   rows: state.table.rows,
   visibleRows: state.table.visibleRows,
   rowsPerPage: state.table.rowsPerPage,
-  page: state.table.page
+  page: state.table.page,
 });
 
 const mapDispatchToProps = dispatch => ({
-  updateColumn: payload =>
-    dispatch({ type: actionTypes.UPDATE_COLUMN, payload }),
+  updateColumn: payload => dispatch({ type: actionTypes.UPDATE_COLUMN, payload }),
   updateRow: payload => dispatch({ type: actionTypes.UPDATE_ROW, payload }),
-  updateTableParams: payload =>
-    dispatch({ type: actionTypes.UPDATE_TABLE_PARAMS, payload }),
-  deleteColumn: payload =>
-    dispatch({ type: actionTypes.DELETE_COLUMN, payload }),
-  deleteRow: payload => dispatch({ type: actionTypes.DELETE_ROW, payload })
+  updateTableParams: payload => dispatch({ type: actionTypes.UPDATE_TABLE_PARAMS, payload }),
+  deleteColumn: payload => dispatch({ type: actionTypes.DELETE_COLUMN, payload }),
+  deleteRow: payload => dispatch({ type: actionTypes.DELETE_ROW, payload }),
 });
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(withStyles(styles)(CSVTable));

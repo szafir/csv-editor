@@ -5,22 +5,26 @@ class Download extends PureComponent {
     super(props);
     this.ref = React.createRef();
   }
+
   componentDidUpdate() {
-    if (this.props.downloadContent) {
-      this.ref.click();
-      this.props.clearDownload();
+    const { downloadContent, clearDownload } = this.props;
+    if (downloadContent) {
+      this.ref.current.click();
+      clearDownload();
     }
   }
+
   render() {
+    const { downloadContent } = this.props;
     return (
       <>
-        {this.props.downloadContent && (
+        {downloadContent && (
           <a
             download="file.csv"
             href={`data:text/plain;charset=utf-8,${encodeURIComponent(
-              this.props.downloadContent
+              downloadContent,
             )}`}
-            ref={ref => (this.ref = ref)}
+            ref={this.ref}
           >
             &nbsp;
           </a>

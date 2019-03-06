@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
 import App from "../App";
 import store from "../store";
-import { Provider } from "react-redux";
 
 test("renders without crashing", () => {
   const div = document.createElement("div");
@@ -10,7 +10,7 @@ test("renders without crashing", () => {
     <Provider store={store}>
       <App />
     </Provider>,
-    div
+    div,
   );
   ReactDOM.unmountComponentAtNode(div);
 });

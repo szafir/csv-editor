@@ -9,29 +9,39 @@ import Download from "../components/Download";
 const styles = theme => ({
   root: {
     display: "flex",
-    margin: `${theme.spacing.unit * 2}px 0 ${theme.spacing.unit * 2}px 0`
+    margin: `${theme.spacing.unit * 2}px 0 ${theme.spacing.unit * 2}px 0`,
   },
   button: {
-    marginRight: theme.spacing.unit * 2
+    marginRight: theme.spacing.unit * 2,
   },
   fileInput: {
-    display: "none"
-  }
+    display: "none",
+  },
 });
 
 class Toolbar extends Component {
-  onFileSelect = event => {
-    this.props.processCSV({
-      file: event.target.files[0]
+  onFileSelect = (event) => {
+    const { processCSV } = this.props;
+    processCSV({
+      file: event.target.files[0],
     });
   };
+
   handleDownloadCSV = () => {
     const { downloadCSV } = this.props;
     downloadCSV();
   };
+
   render() {
-    const { classes } = this.props;
-    const disabled = this.props.columns.length === 0;
+    const {
+      classes,
+      columns,
+      addRow,
+      addColumn,
+      downloadContent,
+      clearDownload,
+    } = this.props;
+    const disabled = columns.length === 0;
 
     return (
       <div className={classes.root}>
@@ -39,25 +49,25 @@ class Toolbar extends Component {
           variant="contained"
           disabled={disabled}
           className={classes.button}
-          onClick={this.props.addRow}
+          onClick={addRow}
         >
           Add row
         </Button>
         <Button
           variant="contained"
           className={classes.button}
-          onClick={this.props.addColumn}
+          onClick={addColumn}
         >
           Add column
         </Button>
-        <input
-          className={classes.fileInput}
-          id="import-csv"
-          multiple
-          type="file"
-          onChange={this.onFileSelect}
-        />
         <label htmlFor="import-csv">
+          <input
+            className={classes.fileInput}
+            id="import-csv"
+            multiple
+            type="file"
+            onChange={this.onFileSelect}
+          />
           <Button
             variant="contained"
             component="span"
@@ -74,8 +84,8 @@ class Toolbar extends Component {
           Export to CSV
         </Button>
         <Download
-          downloadContent={this.props.downloadContent}
-          clearDownload={this.props.clearDownload}
+          downloadContent={downloadContent}
+          clearDownload={clearDownload}
         />
       </div>
     );
@@ -85,7 +95,7 @@ class Toolbar extends Component {
 const mapStateToProps = state => ({
   rows: state.table.rows,
   columns: state.table.columns,
-  downloadContent: state.table.downloadContent
+  downloadContent: state.table.downloadContent,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -93,9 +103,9 @@ const mapDispatchToProps = dispatch => ({
   addColumn: () => dispatch({ type: actionTypes.ADD_COLUMN }),
   processCSV: payload => dispatch(actions.processCSV(payload)),
   downloadCSV: () => dispatch({ type: actionTypes.DOWNLOAD_CSV }),
-  clearDownload: () => dispatch({ type: actionTypes.CLEAR_DOWNLOAD })
+  clearDownload: () => dispatch({ type: actionTypes.CLEAR_DOWNLOAD }),
 });
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(withStyles(styles)(Toolbar));

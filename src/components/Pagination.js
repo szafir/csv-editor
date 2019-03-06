@@ -1,16 +1,19 @@
 import React from "react";
 import { TablePagination } from "@material-ui/core";
 
-const Pagination = props => {
-  const { rowsPerPage, count, page, onParamsUpdate } = props;
-  const onChangePage = (event, page) => {
+const Pagination = (props) => {
+  const {
+    rowsPerPage, count, page, onParamsUpdate,
+  } = props;
+
+  const onChangePage = (event, pageNo) => {
     onParamsUpdate({
-      page
+      page: pageNo,
     });
   };
-  const onChangeRowsPerPage = event => {
+  const onChangeRowsPerPage = (event) => {
     onParamsUpdate({
-      rowsPerPage: event.target.value
+      rowsPerPage: event.target.value,
     });
   };
   return (
