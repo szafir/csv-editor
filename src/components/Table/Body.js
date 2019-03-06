@@ -1,21 +1,21 @@
 import React from "react";
-import CSVRow from "./CSVRow";
-import { withStyles } from "@material-ui/core/styles";
+import CSVRow from "./Row";
 import { TableBody } from "@material-ui/core";
 
-const CSVBody = props => {
-  const { rows, page, rowsPerPage } = props;
+const Body = props => {
+  const { rows, page, rowsPerPage, onDelete } = props;
   return (
     <TableBody>
       {rows.map((item, index) => {
         return (
           <CSVRow
             row={item}
-            startEditHandler={props.startEditHandler}
-            handleInputBlur={props.handleInputBlur}
+            onRowFocusHandler={props.onRowFocusHandler}
+            onRowChangeHandler={props.onRowChangeHandler}
             index={index}
             key={`${index}-row`}
             rowsPerPage={rowsPerPage}
+            onDelete={onDelete}
             page={page}
           />
         );
@@ -24,4 +24,4 @@ const CSVBody = props => {
   );
 };
 
-export default CSVBody;
+export default Body;

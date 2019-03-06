@@ -2,11 +2,15 @@ import React from "react";
 
 import { TableCell, TableRow, TextField, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const styles = theme => ({
   row: {
     "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.background.default
+    },
+    "& > *": {
+      position: "relative"
     }
   },
   textField: {
@@ -15,17 +19,26 @@ const styles = theme => ({
     "& input": {
       padding: "8px 8px 6px"
     }
+  },
+  deleteIcon: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    padding: theme.spacing.unit / 2,
+    cursor: "pointer"
+  },
+  cell: {
+    cursor: "text"
   }
 });
 
 let refElem = React.createRef();
 
-const CSVRow = props => {
+const Row = props => {
   const { classes, row, rowsPerPage, page } = props;
 
-  const startEditHandler = (rowInd, colInd, event) => {
-    props.startEditHandler(rowInd, colInd, event);
-
+  const onRowFocusHandler = (rowInd, colInd, event) => {
+    props.onRowFocusHandler(rowInd, colInd, event);
     requestAnimationFrame(() => {
       refElem.focus();
     });
@@ -35,8 +48,9 @@ const CSVRow = props => {
       {row.map((item, ind) => {
         return (
           <TableCell
-            onClick={startEditHandler.bind(this, props.index, ind)}
+            onClick={onRowFocusHandler.bind(this, props.index, ind)}
             padding="dense"
+            className={classes.cell}
             key={`${page * rowsPerPage + props.index}-${ind}-cell`}
           >
             {item.editable ? (
@@ -45,13 +59,13 @@ const CSVRow = props => {
                 value={item.value}
                 margin="normal"
                 variant="outlined"
-                onBlur={props.handleInputBlur.bind(
+                onBlur={props.onRowChangeHandler.bind(
                   this,
                   props.index,
                   ind,
                   false
                 )}
-                onChange={props.handleInputBlur.bind(
+                onChange={props.onRowChangeHandler.bind(
                   this,
                   props.index,
                   ind,
@@ -60,13 +74,15 @@ const CSVRow = props => {
                 inputRef={ref => (refElem = ref)}
               />
             ) : (
-              <Typography
-                variant="h6"
-                color="textSecondary"
-                className={classes.header}
-              >
+              <Typography variant="h6" color="textSecondary">
                 {item.value}
               </Typography>
+            )}
+            {ind === row.length - 1 && (
+              <DeleteIcon
+                className={classes.deleteIcon}
+                onClick={props.onDelete.bind(this, props.index)}
+              />
             )}
           </TableCell>
         );
@@ -75,4 +91,4 @@ const CSVRow = props => {
   );
 };
 
-export default withStyles(styles)(CSVRow);
+export default withStyles(styles)(Row);

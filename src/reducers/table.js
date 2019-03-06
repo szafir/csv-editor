@@ -1,31 +1,16 @@
 import * as actionTypes from "../actions/actionTypes";
 
+import Papa from "papaparse";
+
 const initState = () => {
   const initialState = {
-    columns: [{ value: "column1" }, { value: "column2" }],
-    rows: [
-      [{ value: "row11" }, { value: "row12" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }],
-      [{ value: "row21" }, { value: "row22" }]
-    ],
+    columns: [],
+    rows: [],
     visibleRows: [],
     page: 0,
-    rowsPerPage: 10
+    rowsPerPage: 10,
+    downloadContent: false
   };
-  initialState.visibleRows = initialState.rows.slice(
-    initialState.page * initialState.rowsPerPage,
-    initialState.page * initialState.rowsPerPage + initialState.rowsPerPage
-  );
-
   return initialState;
 };
 
@@ -49,11 +34,12 @@ const addRow = (state, action) => {
   const { page, rowsPerPage } = state;
   const rows = [...state.rows];
   const row = state.columns.map(item => ({ value: "" }));
+
+  rows.splice(page * rowsPerPage, 0, row);
   const visibleRows = rows.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
-  rows.splice(page * rowsPerPage, 0, row);
   return {
     ...state,
     rows,
@@ -82,7 +68,6 @@ const updateColumn = (state, action) => {
     editable,
     value: value === false ? state.columns[index].value : value
   };
-
   return {
     ...state,
     columns
@@ -98,12 +83,10 @@ const updateRow = (state, action) => {
   rows[coordinateX][coordinateY].editable = editable;
   rows[coordinateX][coordinateY].value =
     value === false ? rows[coordinateX][coordinateY].value : value;
-
   const visibleRows = rows.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
-
   return {
     ...state,
     rows,
@@ -116,15 +99,13 @@ const deleteColumn = (state, action) => {
   const columns = [...state.columns];
   const { page, rowsPerPage } = state;
   let rows = [];
-  if(state.rows[0].length > 1) {
-
-    rows = state.rows.map(row =>  {
-     const rw = [...row]
-     rw.splice(index, 1);
-     return rw;
+  if (state.rows.length > 0 && state.rows[0].length > 1) {
+    rows = state.rows.map(row => {
+      const rw = [...row];
+      rw.splice(index, 1);
+      return rw;
     });
   }
- 
   columns.splice(index, 1);
   const visibleRows = rows.slice(
     page * rowsPerPage,
@@ -135,6 +116,59 @@ const deleteColumn = (state, action) => {
     columns,
     rows,
     visibleRows
+  };
+};
+
+const deleteRow = (state, action) => {
+  const { index } = action.payload;
+  const { page, rowsPerPage } = state;
+  const rows = state.rows.map(row => row.map(item => ({ ...item })));
+  rows.splice(page * rowsPerPage + index, 1);
+  const visibleRows = rows.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+  return {
+    ...state,
+    rows,
+    visibleRows
+  };
+};
+
+const processCSV = (state, action) => {
+  const { data } = action.payload;
+  const { page, rowsPerPage } = state;
+  const columns = data[0].map(col => ({ value: col }));
+  data.splice(0, 1);
+  const rows = data.map(row => row.map(item => ({ value: item })));
+  const visibleRows = rows.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+  return {
+    ...state,
+    columns,
+    rows,
+    visibleRows
+  };
+};
+
+const downloadCSV = (state, action) => {
+  const { rows, columns } = state;
+  const csvData = [columns.map(item => item.value)].concat(
+    rows.map(row => row.map(item => item.value))
+  );
+  const csv = Papa.unparse(csvData);
+  return {
+    ...state,
+    downloadContent: csv
+  };
+};
+
+const clearDownload = state => {
+  return {
+    ...state,
+    downloadContent: false
   };
 };
 
@@ -154,6 +188,14 @@ const reducer = (state = initialState, action) => {
       return updateTableParams(state, action);
     case actionTypes.DELETE_COLUMN:
       return deleteColumn(state, action);
+    case actionTypes.DELETE_ROW:
+      return deleteRow(state, action);
+    case actionTypes.PROCESS_CSV:
+      return processCSV(state, action);
+    case actionTypes.DOWNLOAD_CSV:
+      return downloadCSV(state, action);
+    case actionTypes.CLEAR_DOWNLOAD:
+      return clearDownload(state, action);
     default:
       return state;
   }
