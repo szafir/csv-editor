@@ -4,7 +4,6 @@ import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import * as actionTypes from "../actions/actionTypes";
 import * as actions from "../actions";
-import { stat } from "fs";
 import Download from "../components/Download";
 
 const styles = theme => ({

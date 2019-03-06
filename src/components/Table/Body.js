@@ -6,7 +6,7 @@ const Body = props => {
   const { rows, page, rowsPerPage, onDelete } = props;
   return (
     <TableBody>
-      {rows.map((item, index) => {
+      {rows && rows.map((item, index) => {
         return (
           <CSVRow
             row={item}

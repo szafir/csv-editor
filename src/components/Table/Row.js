@@ -45,7 +45,7 @@ const Row = props => {
   };
   return (
     <TableRow className={classes.row}>
-      {row.map((item, ind) => {
+      {row && row.map((item, ind) => {
         return (
           <TableCell
             onClick={onRowFocusHandler.bind(this, props.index, ind)}

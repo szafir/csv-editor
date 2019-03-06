@@ -184,8 +184,6 @@ const reducer = (state = initialState, action) => {
       return updateColumn(state, action);
     case actionTypes.UPDATE_ROW:
       return updateRow(state, action);
-    case actionTypes.UPDATE_TABLE_PARAMS:
-      return updateTableParams(state, action);
     case actionTypes.DELETE_COLUMN:
       return deleteColumn(state, action);
     case actionTypes.DELETE_ROW:
