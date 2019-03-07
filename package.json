@@ -1,6 +1,7 @@
 {
   "name": "csv-editor",
   "version": "0.1.0",
+  "homepage": "https://szafir.github.io/csv-editor/index.html",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^3.9.2",
@@ -16,9 +17,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src/**/*.js"
+    "lint": "eslint src/**/*.js",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -32,6 +35,7 @@
   "devDependencies": {
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.10.0",
-    "eslint-config-airbnb": "^17.1.0"
+    "eslint-config-airbnb": "^17.1.0",
+    "gh-pages": "^2.0.1"
   }
 }
