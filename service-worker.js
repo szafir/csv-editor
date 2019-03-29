@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/csv-editor/precache-manifest.62dd2965d4d21f96172258521a5be83d.js"
+  "/csv-editor/index.html/precache-manifest.a56f1e9c5af5179dc3330ba2ad19c041.js"
 );
 
 workbox.clientsClaim();
@@ -28,7 +28,7 @@ self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerNavigationRoute("/csv-editor/index.html", {
+workbox.routing.registerNavigationRoute("/csv-editor/index.html/index.html", {
   
   blacklist: [/^\/_/,/\/[^\/]+\.[^\/]+$/],
 });
