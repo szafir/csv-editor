@@ -24,7 +24,7 @@ class CSVTable extends Component {
     });
   };
 
-  onHeaderChangeHandler = (index, editable, event) => {
+  onHeaderChangeHandler = (index, editable) => (event) => {
     const { updateColumn } = this.props;
     updateColumn({
       editable,
@@ -41,7 +41,7 @@ class CSVTable extends Component {
     });
   };
 
-  onRowChangeHandler = (rowIndex, colIndex, editable, event) => {
+  onRowChangeHandler = (rowIndex, colIndex, editable) => (event) => {
     const { updateRow } = this.props;
     updateRow({
       editable,
@@ -50,7 +50,7 @@ class CSVTable extends Component {
     });
   };
 
-  handleColumnDeletion = (index, event) => {
+  handleColumnDeletion = index => (event) => {
     const { deleteColumn } = this.props;
     deleteColumn({
       index,
@@ -58,7 +58,7 @@ class CSVTable extends Component {
     event.stopPropagation();
   };
 
-  handleRowDeletion = (index, event) => {
+  handleRowDeletion = index => (event) => {
     const { deleteRow } = this.props;
     deleteRow({
       index,
@@ -71,7 +71,7 @@ class CSVTable extends Component {
       classes,
       columns,
       rows,
-      visibleRows,
+      rowsIds,
       rowsPerPage,
       page,
       updateTableParams,
@@ -89,7 +89,8 @@ class CSVTable extends Component {
                   onDelete={this.handleColumnDeletion}
                 />
                 <Body
-                  rows={visibleRows}
+                  rows={rows}
+                  rowsIds={rowsIds}
                   onRowFocusHandler={this.onRowFocusHandler}
                   onRowChangeHandler={this.onRowChangeHandler}
                   rowsPerPage={rowsPerPage}
@@ -114,7 +115,7 @@ class CSVTable extends Component {
 const mapStateToProps = state => ({
   columns: state.table.columns,
   rows: state.table.rows,
-  visibleRows: state.table.visibleRows,
+  rowsIds: state.table.rowsIds,
   rowsPerPage: state.table.rowsPerPage,
   page: state.table.page,
 });

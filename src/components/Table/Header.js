@@ -40,7 +40,7 @@ let refElem = React.createRef();
 const Header = props => {
   const { classes, columns } = props;
 
-  const onHeaderFocusHandler = (rowInd, event) => {
+  const onHeaderFocusHandler = rowInd => event => {
     props.onHeaderFocusHandler(rowInd, event);
     requestAnimationFrame(() => {
       refElem.focus();
@@ -54,8 +54,8 @@ const Header = props => {
           return (
             <TableCell
               className={classes.cell}
-              key={`header-${ind}`}
-              onClick={onHeaderFocusHandler.bind(this, ind)}
+              key={item.id}
+              onClick={onHeaderFocusHandler(ind)}
               style={{
                 width: `${1 / (0.01 * columns.length)}%`
               }}
@@ -67,8 +67,8 @@ const Header = props => {
                   value={item.value}
                   margin="normal"
                   variant="outlined"
-                  onBlur={props.onHeaderChangeHandler.bind(this, ind, false)}
-                  onChange={props.onHeaderChangeHandler.bind(this, ind, true)}
+                  onBlur={props.onHeaderChangeHandler(ind, false)}
+                  onChange={props.onHeaderChangeHandler(ind, true)}
                   inputRef={ref => (refElem = ref)}
                 />
               ) : (
@@ -82,7 +82,7 @@ const Header = props => {
               )}
               <DeleteIcon
                 className={classes.deleteIcon}
-                onClick={props.onDelete.bind(this, ind)}
+                onClick={props.onDelete(ind)}
               />
             </TableCell>
           );

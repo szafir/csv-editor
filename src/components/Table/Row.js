@@ -37,7 +37,7 @@ let refElem = React.createRef();
 const Row = props => {
   const { classes, row, rowsPerPage, page } = props;
 
-  const onRowFocusHandler = (rowInd, colInd, event) => {
+  const onRowFocusHandler = (rowInd, colInd) => event => {
     props.onRowFocusHandler(rowInd, colInd, event);
     requestAnimationFrame(() => {
       refElem.focus();
@@ -48,7 +48,7 @@ const Row = props => {
       {row && row.map((item, ind) => {
         return (
           <TableCell
-            onClick={onRowFocusHandler.bind(this, props.index, ind)}
+            onClick={onRowFocusHandler(props.index, ind)}
             padding="dense"
             className={classes.cell}
             key={`${page * rowsPerPage + props.index}-${ind}-cell`}
@@ -59,14 +59,12 @@ const Row = props => {
                 value={item.value}
                 margin="normal"
                 variant="outlined"
-                onBlur={props.onRowChangeHandler.bind(
-                  this,
+                onBlur={props.onRowChangeHandler(
                   props.index,
                   ind,
                   false
                 )}
-                onChange={props.onRowChangeHandler.bind(
-                  this,
+                onChange={props.onRowChangeHandler(
                   props.index,
                   ind,
                   true
@@ -81,7 +79,7 @@ const Row = props => {
             {ind === row.length - 1 && (
               <DeleteIcon
                 className={classes.deleteIcon}
-                onClick={props.onDelete.bind(this, props.index)}
+                onClick={props.onDelete(this, props.index)}
               />
             )}
           </TableCell>

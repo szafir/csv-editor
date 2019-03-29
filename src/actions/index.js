@@ -1,7 +1,7 @@
 import Papa from "papaparse";
 import * as actionTypes from "./actionTypes";
 
-export const processCSV = (payload) => {
+const processCSV = (payload) => {
   const { file } = payload;
   return (dispatch) => {
     Papa.parse(file, {
@@ -13,4 +13,8 @@ export const processCSV = (payload) => {
       },
     });
   };
+};
+
+export {
+  processCSV,
 };

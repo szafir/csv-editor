@@ -1,11 +1,12 @@
 import Papa from "papaparse";
+import v4 from "uuid";
 import * as actionTypes from "../actions/actionTypes";
 
 const initState = () => {
   const initialState = {
     columns: [],
     rows: [],
-    visibleRows: [],
+    rowsIds: [],
     page: 0,
     rowsPerPage: 10,
     downloadContent: false,
@@ -17,9 +18,9 @@ const initialState = initState();
 
 const addColumn = (state) => {
   const columns = [...state.columns];
-  columns.push({ name: "" });
+  columns.push({ name: "", id: v4() });
   const rows = state.rows.map((row) => {
-    row.push({ value: "" });
+    row.push({ value: "", id: v4() });
     return row;
   });
   return {
@@ -32,31 +33,24 @@ const addColumn = (state) => {
 const addRow = (state) => {
   const { page, rowsPerPage } = state;
   const rows = [...state.rows];
-  const row = state.columns.map(() => ({ value: "" }));
+  const row = state.columns.map(() => ({ value: "", id: v4() }));
+  const rowsIds = [...state.rowsIds];
 
   rows.splice(page * rowsPerPage, 0, row);
-  const visibleRows = rows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
+  rowsIds.splice(page * rowsPerPage, 0, v4());
   return {
     ...state,
     rows,
-    visibleRows,
+    rowsIds,
   };
 };
 
 const updateTableParams = (state, action) => {
   const { page = state.page, rowsPerPage = state.rowsPerPage } = action.payload;
-  const visibleRows = state.rows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
   return {
     ...state,
     page,
     rowsPerPage,
-    visibleRows,
   };
 };
 
@@ -81,21 +75,15 @@ const updateRow = (state, action) => {
   const rows = state.rows.map(row => row.map(item => ({ ...item })));
   rows[cX][cY].editable = editable;
   rows[cX][cY].value = value === false ? rows[cX][cY].value : value;
-  const visibleRows = rows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
   return {
     ...state,
     rows,
-    visibleRows,
   };
 };
 
 const deleteColumn = (state, action) => {
   const { index } = action.payload;
   const columns = [...state.columns];
-  const { page, rowsPerPage } = state;
   let rows = [];
   if (state.rows.length > 0 && state.rows[0].length > 1) {
     rows = state.rows.map((row) => {
@@ -105,15 +93,10 @@ const deleteColumn = (state, action) => {
     });
   }
   columns.splice(index, 1);
-  const visibleRows = rows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
   return {
     ...state,
     columns,
     rows,
-    visibleRows,
   };
 };
 
@@ -121,33 +104,32 @@ const deleteRow = (state, action) => {
   const { index } = action.payload;
   const { page, rowsPerPage } = state;
   const rows = state.rows.map(row => row.map(item => ({ ...item })));
+  const rowsIds = [...state.rowsIds];
   rows.splice(page * rowsPerPage + index, 1);
-  const visibleRows = rows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
+
+  rowsIds.splice(page * rowsPerPage + index, 1);
+
   return {
     ...state,
     rows,
-    visibleRows,
+    rowsIds,
   };
 };
 
 const processCSV = (state, action) => {
   const { data } = action.payload;
-  const { page, rowsPerPage } = state;
-  const columns = data[0].map(col => ({ value: col }));
+  const columns = data[0].map(col => ({ value: col, id: v4() }));
+  const rowsIds = [];
   data.splice(0, 1);
-  const rows = data.map(row => row.map(item => ({ value: item })));
-  const visibleRows = rows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
+  const rows = data.map((row, index) => {
+    rowsIds[index] = v4();
+    return row.map(item => ({ value: item }));
+  });
   return {
     ...state,
     columns,
     rows,
-    visibleRows,
+    rowsIds,
   };
 };
 
